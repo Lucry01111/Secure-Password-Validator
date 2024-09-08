@@ -145,10 +145,10 @@ int main() {
     // Populate hash table with common passwords
     const char* common_passwords[NUM_COMMON_PASSWORDS] = {
         "12345", "1234", "1234567", "123456", "123456789", "111111", "admin", "admin123", "Password", "Pass@123", "password", "qwerty",
-        "1q2w3e4r", "qwertyuiop", "abc123", "abcd1234", "welcome", "login", "letmein", "monkey", "123123", "qwert", "iloveyou",
+        "1q2w3e4r", "qwertyuiop", "abc123", "abcd1234", "welcome", "login", "monkey", "123123", "qwert", "iloveyou",
         "123321", "1q2w3e4r5t", "123qwe", "admin1", "password1", "q1w2e3r4t5", "sunshine", "football", "princess", "dragon",
         "password123", "starwars", "1234qwer", "qwe123", "1q2w3e", "hello123", "welcome1", "abc12345", "qwerty123", "123qweas",
-        "letmein123", "passw0rd", "qwerty1", "654321", "123456a", "password1234", "admin1234", "password12345", "letmein1", "pass123", "ciao"
+        "letmein123", "passw0rd", "qwerty1"
     };
 
     // Insert common passwords into hash table
