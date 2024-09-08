@@ -194,7 +194,7 @@ int main() {
     }
 
     // Check if the password is common
-    bool common_password = is_common_password(password)
+    bool common_password = is_common_password(password);
     int score = password_strength(password);
     const char* strength;
 
