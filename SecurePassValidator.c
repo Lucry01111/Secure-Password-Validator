@@ -19,9 +19,8 @@ Node* hash_table[HASH_SIZE];
 /* Hash function */
 unsigned int hash(const char* str) {
     unsigned int hash = 0;
-    const char* s = str;
-    while (*s) {
-        hash = (hash * 31) + *s++;
+    while (*str) {
+        hash = (hash * 31) + (unsigned char)*str++;
     }
     return hash % HASH_SIZE;
 }
@@ -31,7 +30,6 @@ void insert_into_hash_table(const char* password) {
     unsigned int index = hash(password);
     Node* new_node = (Node*)malloc(sizeof(Node));
     if (!new_node) {
-        perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
     }
     strcpy(new_node->password, password);
@@ -140,25 +138,11 @@ void free_hash_table() {
     }
 }
 
-/* Debug: Print contents of the hash table */
-void print_hash_table() {
-    for (int i = 0; i < HASH_SIZE; ++i) {
-        Node* current = hash_table[i];
-        if (current != NULL) {
-            printf("Index %d: ", i);
-            while (current) {
-                printf("%s -> ", current->password);
-                current = current->next;
-            }
-            printf("NULL\n");
-        }
-    }
-}
-
 int main() {
     // Initialize hash table
     memset(hash_table, 0, sizeof(hash_table));
-    // Populate hash table with common passwords (I found these passwords in the ranking of the most used passwords)
+
+    // Populate hash table with common passwords
     const char* common_passwords[NUM_COMMON_PASSWORDS] = {
         "12345", "1234", "1234567", "123456", "123456789", "111111", "admin", "admin123", "Password", "Pass@123", "password", "qwerty",
         "1q2w3e4r", "qwertyuiop", "abc123", "abcd1234", "welcome", "login", "letmein", "monkey", "123123", "qwert", "iloveyou",
@@ -166,14 +150,15 @@ int main() {
         "password123", "starwars", "1234qwer", "qwe123", "1q2w3e", "hello123", "welcome1", "abc12345", "qwerty123", "123qweas",
         "letmein123", "passw0rd", "qwerty1", "654321", "123456a", "password1234", "admin1234", "password12345", "letmein1", "pass123", "ciao"
     };
+
+    // Insert common passwords into hash table
     for (int i = 0; i < NUM_COMMON_PASSWORDS; ++i) {
         insert_into_hash_table(common_passwords[i]);
     }
+
     char password[MAX_PASSWORD_LENGTH + 1];
     printf("Enter your password: ");
     if (fgets(password, sizeof(password), stdin) == NULL) {
-        printf("Error reading input.\n");
-        free_hash_table();
         return 1;
     }
 
@@ -182,24 +167,21 @@ int main() {
     if (len > 0 && password[len - 1] == '\n') {
         password[len - 1] = '\0';
     }
+
+    // Check for empty or overly long password
     if (strlen(password) == 0) {
-        printf("Password cannot be empty.\n");
-        free_hash_table();
         return 1;
     }
     if (strlen(password) > MAX_PASSWORD_LENGTH) {
-        printf("Password is too long. Maximum length is %d characters.\n", MAX_PASSWORD_LENGTH);
-        free_hash_table();
         return 1;
     }
 
     // Check if the password is common
-    bool common_password = is_common_password(password);
     int score = password_strength(password);
     const char* strength;
 
     if (score == 0) {
-        strength = "Very Weak"; // Since the score is 0
+        strength = "Very Weak, the password is commonly used, change it!"; // Since the score is 0
     } else if (score <= 2) {
         strength = "Weak";
     } else if (score <= 4) {
@@ -208,14 +190,8 @@ int main() {
         strength = "Strong";
     }
 
-    // Print if password is common or not
-    if (common_password) {
-        printf("The entered password is one of the most commonly used passwords, please change it.\n");
-    } else {
-        printf("The entered password is not commonly used.\n");
-    }
     printf("Password strength: %s (Score: %d/5)\n", strength, score);
-    if (strcmp(strength, "Strong") != 0 || common_password) {
+    if (strcmp(strength, "Strong") != 0 || is_common_password(password)) {
         printf("\nSuggestions to improve your password:\n");
         bool criteria[5] = {
             strlen(password) >= MIN_PASSWORD_LENGTH,
@@ -228,6 +204,7 @@ int main() {
     } else {
         printf("Your password is strong!\n");
     }
+
     // Free hash table memory
     free_hash_table();
     return 0;
